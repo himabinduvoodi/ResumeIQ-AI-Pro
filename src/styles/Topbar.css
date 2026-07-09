@@ -1,0 +1,22 @@
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:30px;
+}
+
+.topbar h1{
+    font-size:35px;
+    color:#111827;
+}
+
+.topbar p{
+    color:#6b7280;
+}
+
+.user{
+    display:flex;
+    align-items:center;
+    gap:20px;
+    font-size:22px;
+}
