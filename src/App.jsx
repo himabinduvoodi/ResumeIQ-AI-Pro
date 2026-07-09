@@ -1,36 +1,56 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 
+import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import History from "./pages/History";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 
+function ProtectedRoute({ children }) {
+  const user = localStorage.getItem("user");
+
+  return user ? children : <Navigate to="/" />;
+}
+
 function App() {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={<Navigate to="/dashboard" />}
-      />
+      <Route path="/" element={<Login />} />
 
       <Route
         path="/dashboard"
-        element={<Dashboard />}
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
       />
 
       <Route
         path="/history"
-        element={<History />}
+        element={
+          <ProtectedRoute>
+            <History />
+          </ProtectedRoute>
+        }
       />
 
       <Route
         path="/profile"
-        element={<Profile />}
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
       />
 
       <Route
         path="/settings"
-        element={<Settings />}
+        element={
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        }
       />
     </Routes>
   );

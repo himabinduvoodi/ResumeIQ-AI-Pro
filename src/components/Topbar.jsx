@@ -1,6 +1,21 @@
-import { FaBell, FaSearch, FaUserCircle } from "react-icons/fa";
+import {
+  FaBell,
+  FaSearch,
+  FaUserCircle,
+  FaSignOutAlt,
+} from "react-icons/fa";
+
+import { useNavigate } from "react-router-dom";
 
 function Topbar() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    alert("Logged Out Successfully 👋");
+    navigate("/");
+  };
+
   return (
     <div
       className="d-flex justify-content-between align-items-center mb-4"
@@ -15,6 +30,7 @@ function Topbar() {
 
       <div>
         <h2 className="fw-bold mb-1">Dashboard</h2>
+
         <p className="text-muted mb-0">
           Welcome to ResumeIQ AI Pro 👋
         </p>
@@ -24,7 +40,7 @@ function Topbar() {
 
       <div className="d-flex align-items-center gap-3">
 
-        {/* Search Box */}
+        {/* Search */}
 
         <div
           className="d-flex align-items-center"
@@ -72,6 +88,16 @@ function Topbar() {
           </div>
 
         </div>
+
+        {/* Logout Button */}
+
+        <button
+          onClick={handleLogout}
+          className="btn btn-danger d-flex align-items-center"
+        >
+          <FaSignOutAlt className="me-2" />
+          Logout
+        </button>
 
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   FaHome,
   FaHistory,
@@ -9,6 +9,14 @@ import {
 } from "react-icons/fa";
 
 function Sidebar() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    alert("Logged Out Successfully 👋");
+    navigate("/");
+  };
+
   return (
     <div
       className="position-fixed top-0 start-0 text-white"
@@ -24,7 +32,6 @@ function Sidebar() {
       {/* Logo */}
 
       <div className="text-center mb-5">
-
         <div
           className="d-inline-flex justify-content-center align-items-center mb-3"
           style={{
@@ -45,7 +52,6 @@ function Sidebar() {
         <small className="text-light">
           Smart Resume Analyzer
         </small>
-
       </div>
 
       {/* Navigation */}
@@ -95,11 +101,15 @@ function Sidebar() {
       <div
         className="position-absolute bottom-0 start-0 w-100 p-4"
       >
-        <button className="btn btn-danger w-100 rounded-4">
+        <button
+          onClick={handleLogout}
+          className="btn btn-danger w-100 rounded-4"
+        >
           <FaSignOutAlt className="me-2" />
           Logout
         </button>
       </div>
+
     </div>
   );
 }
