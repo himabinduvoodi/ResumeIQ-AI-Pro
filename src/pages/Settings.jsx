@@ -1,55 +1,26 @@
-import { useState, useEffect } from "react";
-
+import { useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
+import { useTheme } from "../context/ThemeContext";
 
 function Settings() {
 
-  const [darkMode, setDarkMode] = useState(false);
-
-  const [notifications, setNotifications] = useState(true);
+  const { darkMode, toggleTheme } = useTheme();
 
   useEffect(() => {
-
-    const savedDark =
-      JSON.parse(localStorage.getItem("darkMode"));
-
-    const savedNotify =
-      JSON.parse(localStorage.getItem("notifications"));
-
-    if (savedDark !== null) {
-      setDarkMode(savedDark);
-    }
-
-    if (savedNotify !== null) {
-      setNotifications(savedNotify);
-    }
-
-  }, []);
-
-  const saveSettings = () => {
-
-    localStorage.setItem(
-      "darkMode",
-      JSON.stringify(darkMode)
-    );
-
-    localStorage.setItem(
-      "notifications",
-      JSON.stringify(notifications)
-    );
-
-    alert("Settings Saved Successfully!");
-
-  };
+    document.body.style.background = darkMode
+      ? "#121212"
+      : "#f4f7fc";
+  }, [darkMode]);
 
   return (
 
     <div
       className="d-flex"
       style={{
-        background: darkMode ? "#222" : "#f4f7fc",
+        background: darkMode ? "#121212" : "#f4f7fc",
         minHeight: "100vh",
+        color: darkMode ? "white" : "black",
       }}
     >
 
@@ -60,68 +31,41 @@ function Settings() {
         style={{
           marginLeft: "260px",
           padding: "30px",
-          color: darkMode ? "white" : "black",
         }}
       >
 
         <Topbar />
 
         <div
-          className="card shadow border-0 rounded-4 mt-4"
+          className="card border-0 shadow-lg mt-4"
+          style={{
+            background: darkMode ? "#1f2937" : "white",
+            color: darkMode ? "white" : "black",
+          }}
         >
 
-          <div className="card-body p-4">
+          <div className="card-body">
 
-            <h2 className="fw-bold mb-4">
+            <h2 className="mb-4">
               ⚙ Settings
             </h2>
 
-            <div className="form-check form-switch mb-4">
+            <div className="form-check form-switch">
 
               <input
                 className="form-check-input"
                 type="checkbox"
                 checked={darkMode}
-                onChange={() =>
-                  setDarkMode(!darkMode)
-                }
+                onChange={toggleTheme}
               />
 
-              <label className="form-check-label">
+              <label className="form-check-label ms-2">
 
                 Enable Dark Mode
 
               </label>
 
             </div>
-
-            <div className="form-check form-switch mb-4">
-
-              <input
-                className="form-check-input"
-                type="checkbox"
-                checked={notifications}
-                onChange={() =>
-                  setNotifications(!notifications)
-                }
-              />
-
-              <label className="form-check-label">
-
-                Enable Notifications
-
-              </label>
-
-            </div>
-
-            <button
-              className="btn btn-primary"
-              onClick={saveSettings}
-            >
-
-              Save Settings
-
-            </button>
 
           </div>
 

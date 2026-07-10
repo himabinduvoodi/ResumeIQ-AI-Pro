@@ -12,7 +12,11 @@ import JobMatcher from "../components/JobMatcher";
 import { extractTextFromPDF } from "../utils/extractText";
 import { analyzeResume } from "../services/groq";
 
+import { useTheme } from "../context/ThemeContext";
+
 function Dashboard() {
+
+  const { darkMode } = useTheme();
 
   const [resume, setResume] = useState(null);
 
@@ -40,41 +44,39 @@ function Dashboard() {
 
     let score = 0;
 
-    if (text.toLowerCase().includes("skills")) score += 20;
+    if (text.toLowerCase().includes("skills"))
+      score += 20;
 
-    if (text.toLowerCase().includes("project")) score += 20;
+    if (text.toLowerCase().includes("project"))
+      score += 20;
 
-    if (text.toLowerCase().includes("education")) score += 20;
+    if (text.toLowerCase().includes("education"))
+      score += 20;
 
     if (
       text.toLowerCase().includes("certificate") ||
       text.toLowerCase().includes("certification")
-    ) {
+    )
       score += 15;
-    }
 
     if (
       text.toLowerCase().includes("experience") ||
       text.toLowerCase().includes("internship")
-    ) {
+    )
       score += 15;
-    }
 
     if (
       /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/.test(text)
-    ) {
+    )
       score += 5;
-    }
 
     if (
       /(\+91[\s-]?)?[6-9]\d{9}/.test(text)
-    ) {
+    )
       score += 5;
-    }
 
-    if (score > 100) {
+    if (score > 100)
       score = 100;
-    }
 
     setAtsScore(score);
 
@@ -103,8 +105,8 @@ function Dashboard() {
 
     const lines = text
       .split("\n")
-      .map(line => line.trim())
-      .filter(line => line.length > 0);
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0);
 
     for (const line of lines) {
 
@@ -116,14 +118,13 @@ function Dashboard() {
       ) {
 
         name = line;
-
         break;
 
       }
 
     }
 
-    // Skill Detection
+    // Skills
 
     const skills = [];
 
@@ -150,9 +151,7 @@ function Dashboard() {
     skillList.forEach((skill) => {
 
       if (
-        text.toLowerCase().includes(
-          skill.toLowerCase()
-        )
+        text.toLowerCase().includes(skill.toLowerCase())
       ) {
 
         skills.push(skill);
@@ -197,15 +196,13 @@ function Dashboard() {
 
     );
 
-    // Save Upload History
+    // Save History
 
     const history =
 
       JSON.parse(
 
-        localStorage.getItem(
-          "resumeHistory"
-        )
+        localStorage.getItem("resumeHistory")
 
       ) || [];
 
@@ -213,7 +210,7 @@ function Dashboard() {
 
       name: file.name,
 
-      score: score,
+      score,
 
       date: new Date().toLocaleString(),
 
@@ -228,13 +225,12 @@ function Dashboard() {
     );
 
   };
-
-  return (
+    return (
 
     <div
       className="d-flex"
       style={{
-        background: "#f4f7fc",
+        background: darkMode ? "#111827" : "#f4f7fc",
         minHeight: "100vh",
       }}
     >
@@ -246,80 +242,165 @@ function Dashboard() {
         style={{
           marginLeft: "260px",
           padding: "30px",
+          color: darkMode ? "white" : "black",
         }}
       >
 
         <Topbar />
-                {/* First Row */}
+
+        {/* Row 1 */}
 
         <div className="row mt-4">
 
           <div className="col-lg-6 mb-4">
 
-            <UploadCard
-              setResume={handleResumeUpload}
-            />
+            <div
+              className="card border-0 shadow"
+              style={{
+                background: darkMode
+                  ? "#1f2937"
+                  : "white",
+                borderRadius: "20px",
+              }}
+            >
+
+              <div className="card-body">
+
+                <UploadCard
+                  setResume={handleResumeUpload}
+                />
+
+              </div>
+
+            </div>
 
           </div>
 
           <div className="col-lg-6 mb-4">
 
-            <ATSCard
-              resumeText={resumeText}
-            />
+            <div
+              className="card border-0 shadow"
+              style={{
+                background: darkMode
+                  ? "#1f2937"
+                  : "white",
+                borderRadius: "20px",
+              }}
+            >
+
+              <div className="card-body">
+
+                <ATSCard
+                  resumeText={resumeText}
+                />
+
+              </div>
+
+            </div>
 
           </div>
 
         </div>
-
-        {/* Second Row */}
+                {/* Row 2 */}
 
         <div className="row">
 
           <div className="col-lg-6 mb-4">
 
-            <ResumePreview
-              resume={resume}
-            />
+            <div
+              className="card border-0 shadow"
+              style={{
+                background: darkMode ? "#1f2937" : "white",
+                borderRadius: "20px",
+              }}
+            >
+              <div className="card-body">
+
+                <ResumePreview
+                  resume={resume}
+                />
+
+              </div>
+
+            </div>
 
           </div>
 
           <div className="col-lg-6 mb-4">
 
-            <Suggestions
-              resumeText={resumeText}
-            />
+            <div
+              className="card border-0 shadow"
+              style={{
+                background: darkMode ? "#1f2937" : "white",
+                borderRadius: "20px",
+              }}
+            >
+              <div className="card-body">
+
+                <Suggestions
+                  resumeText={resumeText}
+                />
+
+              </div>
+
+            </div>
 
           </div>
 
         </div>
 
-        {/* Third Row */}
+        {/* Row 3 */}
+
+        <div className="row">
+
+          <div className="col-12 mb-4">
+
+            <div
+              className="card border-0 shadow"
+              style={{
+                background: darkMode ? "#1f2937" : "white",
+                borderRadius: "20px",
+              }}
+            >
+              <div className="card-body">
+
+                <ResumeAnalysis
+                  candidate={candidate}
+                  resumeText={resumeText}
+                  aiAnalysis={aiAnalysis}
+                  atsScore={atsScore}
+                />
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        {/* Row 4 */}
 
         <div className="row">
 
           <div className="col-12">
 
-            <ResumeAnalysis
-              candidate={candidate}
-              resumeText={resumeText}
-              aiAnalysis={aiAnalysis}
-              atsScore={atsScore}
-            />
+            <div
+              className="card border-0 shadow"
+              style={{
+                background: darkMode ? "#1f2937" : "white",
+                borderRadius: "20px",
+              }}
+            >
+              <div className="card-body">
 
-          </div>
+                <JobMatcher
+                  resumeText={resumeText}
+                />
 
-        </div>
+              </div>
 
-        {/* Fourth Row */}
-
-        <div className="row mt-4">
-
-          <div className="col-12">
-
-            <JobMatcher
-              resumeText={resumeText}
-            />
+            </div>
 
           </div>
 
@@ -330,16 +411,22 @@ function Dashboard() {
 
           <div className="col-md-3 mb-3">
 
-            <div className="card shadow-sm border-0 text-center">
+            <div
+              className="card border-0 shadow text-center"
+              style={{
+                background: darkMode ? "#1f2937" : "white",
+                color: darkMode ? "white" : "black",
+              }}
+            >
 
               <div className="card-body">
 
-                <h6 className="text-muted">
-                  ATS Score
-                </h6>
+                <h6>ATS Score</h6>
 
                 <h2 className="text-success">
+
                   {atsScore}%
+
                 </h2>
 
               </div>
@@ -350,17 +437,23 @@ function Dashboard() {
 
           <div className="col-md-3 mb-3">
 
-            <div className="card shadow-sm border-0 text-center">
+            <div
+              className="card border-0 shadow text-center"
+              style={{
+                background: darkMode ? "#1f2937" : "white",
+                color: darkMode ? "white" : "black",
+              }}
+            >
 
               <div className="card-body">
 
-                <h6 className="text-muted">
-                  Resume Status
-                </h6>
+                <h6>Resume Status</h6>
 
                 <h5 className="text-primary">
 
-                  {resume ? "Uploaded" : "Not Uploaded"}
+                  {resume
+                    ? "Uploaded"
+                    : "Not Uploaded"}
 
                 </h5>
 
@@ -372,20 +465,28 @@ function Dashboard() {
 
           <div className="col-md-3 mb-3">
 
-            <div className="card shadow-sm border-0 text-center">
+            <div
+              className="card border-0 shadow text-center"
+              style={{
+                background: darkMode ? "#1f2937" : "white",
+                color: darkMode ? "white" : "black",
+              }}
+            >
 
               <div className="card-body">
 
-                <h6 className="text-muted">
-                  Words
-                </h6>
+                <h6>Total Words</h6>
 
                 <h2 className="text-warning">
 
                   {
+
                     resumeText.trim()
+
                       ? resumeText.trim().split(/\s+/).length
+
                       : 0
+
                   }
 
                 </h2>
@@ -398,18 +499,24 @@ function Dashboard() {
 
           <div className="col-md-3 mb-3">
 
-            <div className="card shadow-sm border-0 text-center">
+            <div
+              className="card border-0 shadow text-center"
+              style={{
+                background: darkMode ? "#1f2937" : "white",
+                color: darkMode ? "white" : "black",
+              }}
+            >
 
               <div className="card-body">
 
-                <h6 className="text-muted">
-                  AI Status
-                </h6>
+                <h6>AI Status</h6>
 
                 <h5 className="text-success">
 
                   {aiAnalysis
+
                     ? "Completed"
+
                     : "Waiting"}
 
                 </h5>
@@ -421,15 +528,22 @@ function Dashboard() {
           </div>
 
         </div>
-                {/* Footer */}
 
-        <div className="text-center mt-5 mb-3">
+        {/* Footer */}
+
+        <div className="text-center mt-5">
 
           <hr />
 
-          <p className="text-muted">
+          <p
+            style={{
+              color: darkMode
+                ? "#d1d5db"
+                : "#6b7280",
+            }}
+          >
 
-            © 2025 ResumeIQ AI Pro | AI Powered Resume Analyzer
+            © 2025 ResumeIQ AI Pro ❤️
 
           </p>
 

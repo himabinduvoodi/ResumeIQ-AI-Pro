@@ -17,6 +17,18 @@ function Sidebar() {
     navigate("/");
   };
 
+  const menuStyle = ({ isActive }) => ({
+    padding: "14px 18px",
+    borderRadius: "14px",
+    marginBottom: "10px",
+    color: "#fff",
+    background: isActive
+      ? "linear-gradient(90deg,#2563eb,#3b82f6)"
+      : "transparent",
+    transition: "0.3s",
+    fontWeight: isActive ? "600" : "400",
+  });
+
   return (
     <div
       className="position-fixed top-0 start-0 text-white"
@@ -45,71 +57,56 @@ function Sidebar() {
           <FaRobot />
         </div>
 
-        <h3 className="fw-bold mb-1">
-          ResumeIQ AI
-        </h3>
+        <h3 className="fw-bold">ResumeIQ AI</h3>
 
-        <small className="text-light">
-          Smart Resume Analyzer
-        </small>
+        <small>Smart Resume Analyzer</small>
       </div>
-
-      {/* Navigation */}
 
       <NavLink
         to="/dashboard"
-        className="text-decoration-none text-white d-block mb-3"
+        style={menuStyle}
+        className="text-decoration-none d-block"
       >
-        <div className="p-3 rounded-4 bg-primary">
-          <FaHome className="me-2" />
-          Dashboard
-        </div>
+        <FaHome className="me-2" />
+        Dashboard
       </NavLink>
 
       <NavLink
         to="/history"
-        className="text-decoration-none text-white d-block mb-3"
+        style={menuStyle}
+        className="text-decoration-none d-block"
       >
-        <div className="p-3 rounded-4">
-          <FaHistory className="me-2" />
-          History
-        </div>
+        <FaHistory className="me-2" />
+        History
       </NavLink>
 
       <NavLink
         to="/profile"
-        className="text-decoration-none text-white d-block mb-3"
+        style={menuStyle}
+        className="text-decoration-none d-block"
       >
-        <div className="p-3 rounded-4">
-          <FaUser className="me-2" />
-          Profile
-        </div>
+        <FaUser className="me-2" />
+        Profile
       </NavLink>
 
       <NavLink
         to="/settings"
-        className="text-decoration-none text-white d-block"
+        style={menuStyle}
+        className="text-decoration-none d-block"
       >
-        <div className="p-3 rounded-4">
-          <FaCog className="me-2" />
-          Settings
-        </div>
+        <FaCog className="me-2" />
+        Settings
       </NavLink>
 
-      {/* Logout */}
-
-      <div
-        className="position-absolute bottom-0 start-0 w-100 p-4"
-      >
+      <div className="position-absolute bottom-0 start-0 w-100 p-4">
         <button
-          onClick={handleLogout}
           className="btn btn-danger w-100 rounded-4"
+          onClick={handleLogout}
         >
           <FaSignOutAlt className="me-2" />
           Logout
         </button>
       </div>
-
     </div>
   );
 }

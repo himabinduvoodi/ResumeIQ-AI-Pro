@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "../styles/Login.css";
 
 function Login() {
@@ -9,7 +9,7 @@ function Login() {
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    if (email.trim() === "" || password.trim() === "") {
+    if (!email || !password) {
       alert("Please enter Email and Password");
       return;
     }
@@ -31,21 +31,28 @@ function Login() {
 
         <input
           type="email"
-          placeholder="Enter your Email"
+          placeholder="Enter Email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e)=>setEmail(e.target.value)}
         />
 
         <input
           type="password"
-          placeholder="Enter your Password"
+          placeholder="Enter Password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e)=>setPassword(e.target.value)}
         />
 
         <button onClick={handleLogin}>
           Login
         </button>
+
+        <p className="mt-3">
+          Don't have an account?{" "}
+          <Link to="/register">
+            Sign Up
+          </Link>
+        </p>
 
       </div>
     </div>
