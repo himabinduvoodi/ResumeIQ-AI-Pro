@@ -1,560 +1,225 @@
 import { useState } from "react";
-
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 import UploadCard from "../components/UploadCard";
-import ATSCard from "../components/ATSCard";
 import ResumePreview from "../components/ResumePreview";
+import ATSCard from "../components/ATSCard";
 import ResumeAnalysis from "../components/ResumeAnalysis";
 import Suggestions from "../components/Suggestions";
-import JobMatcher from "../components/JobMatcher";
-
 import { extractTextFromPDF } from "../utils/extractText";
-import { analyzeResume } from "../services/groq";
-
-import { useTheme } from "../context/ThemeContext";
 
 function Dashboard() {
-
-  const { darkMode } = useTheme();
-
   const [resume, setResume] = useState(null);
-
   const [resumeText, setResumeText] = useState("");
-
-  const [aiAnalysis, setAiAnalysis] = useState("");
-
   const [atsScore, setAtsScore] = useState(0);
 
-  const [candidate, setCandidate] = useState({
-    name: "",
-    email: "",
-    phone: "",
-  });
-
-  const handleResumeUpload = async (file) => {
-
+  const handleResume = async (file) => {
     setResume(file);
 
-    const text = await extractTextFromPDF(file);
+    try {
+      const text = await extractTextFromPDF(file);
+      setResumeText(text);
 
-    setResumeText(text);
+      let score = 40;
 
-    // ATS Score
-
-    let score = 0;
-
-    if (text.toLowerCase().includes("skills"))
-      score += 20;
-
-    if (text.toLowerCase().includes("project"))
-      score += 20;
-
-    if (text.toLowerCase().includes("education"))
-      score += 20;
-
-    if (
-      text.toLowerCase().includes("certificate") ||
-      text.toLowerCase().includes("certification")
-    )
-      score += 15;
-
-    if (
-      text.toLowerCase().includes("experience") ||
-      text.toLowerCase().includes("internship")
-    )
-      score += 15;
-
-    if (
-      /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/.test(text)
-    )
-      score += 5;
-
-    if (
-      /(\+91[\s-]?)?[6-9]\d{9}/.test(text)
-    )
-      score += 5;
-
-    if (score > 100)
-      score = 100;
-
-    setAtsScore(score);
-
-    // AI Analysis
-
-    const aiResult = await analyzeResume(text);
-
-    setAiAnalysis(aiResult);
-        // Email
-
-    const email =
-      text.match(
-        /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/
-      )?.[0] || "Not Detected";
-
-    // Phone
-
-    const phone =
-      text.match(
-        /(\+91[\s-]?)?[6-9]\d{9}/
-      )?.[0] || "Not Detected";
-
-    // Name Detection
-
-    let name = "Not Detected";
-
-    const lines = text
-      .split("\n")
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0);
-
-    for (const line of lines) {
-
+      // Email
       if (
-        /^[A-Za-z ]+$/.test(line) &&
-        line.split(" ").length >= 2 &&
-        line.split(" ").length <= 4 &&
-        line.length < 35
-      ) {
+        /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/.test(text)
+      )
+        score += 10;
 
-        name = line;
-        break;
+      // Phone
+      if (
+        /(\+91[\s-]?)?[6-9]\d{9}/.test(text)
+      )
+        score += 10;
 
-      }
+      // Skills
+      if (
+        /python|java|javascript|react|node|html|css|sql|mysql|mongodb|c\+\+/i.test(
+          text
+        )
+      )
+        score += 20;
 
+      // Projects
+      if (/project/i.test(text))
+        score += 10;
+
+      // Education
+      if (/education/i.test(text))
+        score += 10;
+
+      // Experience
+      if (/experience|internship/i.test(text))
+        score += 10;
+
+      if (score > 100)
+        score = 100;
+
+      setAtsScore(score);
+    } catch (err) {
+      console.log(err);
     }
-
-    // Skills
-
-    const skills = [];
-
-    const skillList = [
-
-      "Java",
-      "Python",
-      "React",
-      "JavaScript",
-      "HTML",
-      "CSS",
-      "SQL",
-      "MySQL",
-      "MongoDB",
-      "Node.js",
-      "Git",
-      "GitHub",
-      "Bootstrap",
-      "C",
-      "C++"
-
-    ];
-
-    skillList.forEach((skill) => {
-
-      if (
-        text.toLowerCase().includes(skill.toLowerCase())
-      ) {
-
-        skills.push(skill);
-
-      }
-
-    });
-
-    setCandidate({
-
-      name,
-
-      email,
-
-      phone,
-
-    });
-
-    // Save Profile
-
-    localStorage.setItem(
-
-      "profile",
-
-      JSON.stringify({
-
-        name,
-
-        email,
-
-        phone,
-
-        college: "RMD Engineering College",
-
-        skills: skills.join(", "),
-
-        github: "",
-
-        linkedin: "",
-
-      })
-
-    );
-
-    // Save History
-
-    const history =
-
-      JSON.parse(
-
-        localStorage.getItem("resumeHistory")
-
-      ) || [];
-
-    history.unshift({
-
-      name: file.name,
-
-      score,
-
-      date: new Date().toLocaleString(),
-
-    });
-
-    localStorage.setItem(
-
-      "resumeHistory",
-
-      JSON.stringify(history)
-
-    );
-
   };
-    return (
 
-    <div
-      className="d-flex"
-      style={{
-        background: darkMode ? "#111827" : "#f4f7fc",
-        minHeight: "100vh",
-      }}
-    >
+  return (
+    <div className="d-flex bg-light">
 
       <Sidebar />
 
       <div
-        className="flex-grow-1"
         style={{
           marginLeft: "260px",
-          padding: "30px",
-          color: darkMode ? "white" : "black",
+          width: "100%",
+          minHeight: "100vh",
+          padding: "25px",
         }}
       >
-
         <Topbar />
 
-        {/* Row 1 */}
-
         <div className="row mt-4">
 
-          <div className="col-lg-6 mb-4">
+          {/* LEFT SIDE */}
 
-            <div
-              className="card border-0 shadow"
-              style={{
-                background: darkMode
-                  ? "#1f2937"
-                  : "white",
-                borderRadius: "20px",
-              }}
-            >
+          <div className="col-lg-8">
 
-              <div className="card-body">
+            <UploadCard setResume={handleResume} />
 
-                <UploadCard
-                  setResume={handleResumeUpload}
-                />
+            <div className="mt-4">
+              <ResumePreview file={resume} />
+            </div>
 
+            {/* Resume Statistics */}
+
+            <div className="row mt-4">
+
+              <div className="col-md-4 mb-3">
+                <div
+                  className="card shadow border-0"
+                  style={{ borderRadius: "15px" }}
+                >
+                  <div className="card-body text-center">
+                    <h6 className="text-muted">
+                      Total Words
+                    </h6>
+
+                    <h2 className="fw-bold text-primary">
+                      {resumeText
+                        ? resumeText.split(/\s+/).filter(Boolean).length
+                        : 0}
+                    </h2>
+                  </div>
+                </div>
+              </div>
+
+              <div className="col-md-4 mb-3">
+                <div
+                  className="card shadow border-0"
+                  style={{ borderRadius: "15px" }}
+                >
+                  <div className="card-body text-center">
+                    <h6 className="text-muted">
+                      Characters
+                    </h6>
+
+                    <h2 className="fw-bold text-success">
+                      {resumeText.length}
+                    </h2>
+                  </div>
+                </div>
+              </div>
+
+              <div className="col-md-4 mb-3">
+                <div
+                  className="card shadow border-0"
+                  style={{ borderRadius: "15px" }}
+                >
+                  <div className="card-body text-center">
+                    <h6 className="text-muted">
+                      Resume Uploaded
+                    </h6>
+
+                    <h2 className="fw-bold text-danger">
+                      {resume ? "Yes" : "No"}
+                    </h2>
+                  </div>
+                </div>
               </div>
 
             </div>
 
-          </div>
-
-          <div className="col-lg-6 mb-4">
+            {/* Extracted Text */}
 
             <div
-              className="card border-0 shadow"
+              className="card shadow-lg border-0 mt-4"
               style={{
-                background: darkMode
-                  ? "#1f2937"
-                  : "white",
-                borderRadius: "20px",
-              }}
-            >
-
-              <div className="card-body">
-
-                <ATSCard
-                  resumeText={resumeText}
-                />
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-                {/* Row 2 */}
-
-        <div className="row">
-
-          <div className="col-lg-6 mb-4">
-
-            <div
-              className="card border-0 shadow"
-              style={{
-                background: darkMode ? "#1f2937" : "white",
-                borderRadius: "20px",
-              }}
-            >
-              <div className="card-body">
-
-                <ResumePreview
-                  resume={resume}
-                />
-
-              </div>
-
-            </div>
-
-          </div>
-
-          <div className="col-lg-6 mb-4">
-
-            <div
-              className="card border-0 shadow"
-              style={{
-                background: darkMode ? "#1f2937" : "white",
                 borderRadius: "20px",
               }}
             >
               <div className="card-body">
 
-                <Suggestions
-                  resumeText={resumeText}
-                />
+                <h3 className="fw-bold mb-3">
+                  📄 Extracted Resume Text
+                </h3>
+
+                <div
+                  style={{
+                    maxHeight: "400px",
+                    overflowY: "auto",
+                    whiteSpace: "pre-wrap",
+                    background: "#f8f9fa",
+                    padding: "20px",
+                    borderRadius: "15px",
+                    lineHeight: "1.7",
+                    fontSize: "15px",
+                  }}
+                >
+                  {resumeText ? (
+                    resumeText
+                  ) : (
+                    <div className="text-center py-5">
+                      <h5 className="text-muted">
+                        Upload a resume to view extracted text
+                      </h5>
+                    </div>
+                  )}
+                </div>
 
               </div>
-
             </div>
 
           </div>
 
-        </div>
+          {/* RIGHT SIDE */}
 
-        {/* Row 3 */}
-
-        <div className="row">
-
-          <div className="col-12 mb-4">
-
-            <div
-              className="card border-0 shadow"
-              style={{
-                background: darkMode ? "#1f2937" : "white",
-                borderRadius: "20px",
-              }}
-            >
-              <div className="card-body">
-
-                <ResumeAnalysis
-                  candidate={candidate}
-                  resumeText={resumeText}
-                  aiAnalysis={aiAnalysis}
-                  atsScore={atsScore}
-                />
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-        {/* Row 4 */}
-
-        <div className="row">
-
-          <div className="col-12">
-
-            <div
-              className="card border-0 shadow"
-              style={{
-                background: darkMode ? "#1f2937" : "white",
-                borderRadius: "20px",
-              }}
-            >
-              <div className="card-body">
-
-                <JobMatcher
-                  resumeText={resumeText}
-                />
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-                {/* Dashboard Summary */}
-
-        <div className="row mt-4">
-
-          <div className="col-md-3 mb-3">
-
-            <div
-              className="card border-0 shadow text-center"
-              style={{
-                background: darkMode ? "#1f2937" : "white",
-                color: darkMode ? "white" : "black",
-              }}
-            >
-
-              <div className="card-body">
-
-                <h6>ATS Score</h6>
-
-                <h2 className="text-success">
-
-                  {atsScore}%
-
-                </h2>
-
-              </div>
-
-            </div>
-
-          </div>
-
-          <div className="col-md-3 mb-3">
-
-            <div
-              className="card border-0 shadow text-center"
-              style={{
-                background: darkMode ? "#1f2937" : "white",
-                color: darkMode ? "white" : "black",
-              }}
-            >
-
-              <div className="card-body">
-
-                <h6>Resume Status</h6>
-
-                <h5 className="text-primary">
-
-                  {resume
-                    ? "Uploaded"
-                    : "Not Uploaded"}
-
-                </h5>
-
-              </div>
-
-            </div>
-
-          </div>
-
-          <div className="col-md-3 mb-3">
-
-            <div
-              className="card border-0 shadow text-center"
-              style={{
-                background: darkMode ? "#1f2937" : "white",
-                color: darkMode ? "white" : "black",
-              }}
-            >
-
-              <div className="card-body">
-
-                <h6>Total Words</h6>
-
-                <h2 className="text-warning">
-
-                  {
-
-                    resumeText.trim()
-
-                      ? resumeText.trim().split(/\s+/).length
-
-                      : 0
-
-                  }
-
-                </h2>
-
-              </div>
-
-            </div>
-
-          </div>
-
-          <div className="col-md-3 mb-3">
-
-            <div
-              className="card border-0 shadow text-center"
-              style={{
-                background: darkMode ? "#1f2937" : "white",
-                color: darkMode ? "white" : "black",
-              }}
-            >
-
-              <div className="card-body">
-
-                <h6>AI Status</h6>
-
-                <h5 className="text-success">
-
-                  {aiAnalysis
-
-                    ? "Completed"
-
-                    : "Waiting"}
-
-                </h5>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-        {/* Footer */}
-
-        <div className="text-center mt-5">
-
-          <hr />
-
-          <p
+          <div
+            className="col-lg-4"
             style={{
-              color: darkMode
-                ? "#d1d5db"
-                : "#6b7280",
+              position: "sticky",
+              top: "20px",
+              height: "fit-content",
             }}
           >
 
-            © 2025 ResumeIQ AI Pro ❤️
+            <ATSCard score={atsScore} />
 
-          </p>
+            <div className="mt-4">
+              <ResumeAnalysis resumeText={resumeText} />
+            </div>
+
+            <div className="mt-4">
+              <Suggestions resumeText={resumeText} />
+            </div>
+
+          </div>
 
         </div>
 
       </div>
 
     </div>
-
   );
-
 }
 
 export default Dashboard;

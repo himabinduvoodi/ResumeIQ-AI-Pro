@@ -1,48 +1,69 @@
 import {
   FaBell,
   FaSearch,
-  FaUserCircle,
 } from "react-icons/fa";
-
+import { motion } from "framer-motion";
 import { useTheme } from "../context/ThemeContext";
 
 function Topbar() {
 
   const { darkMode } = useTheme();
 
-  const profile =
-    JSON.parse(localStorage.getItem("profile")) || {};
+  const email = localStorage.getItem("user");
+
+  const profile = JSON.parse(
+    localStorage.getItem("profile")
+  );
 
   const profileImage =
     localStorage.getItem("profileImage");
 
-  const email =
-    localStorage.getItem("user") || "";
-
-  let user = profile.name;
-
-  if (!user || user.trim() === "") {
-
-    user = email
+  const user =
+    profile?.name ||
+    (email
       ? email
           .split("@")[0]
           .replace(/\./g, " ")
           .replace(/_/g, " ")
-          .replace(/\b\w/g, (c) => c.toUpperCase())
-      : "User";
+          .replace(/\b\w/g, (c) =>
+            c.toUpperCase()
+          )
+      : "User");
 
-  }
+  const hour = new Date().getHours();
+
+  const greeting =
+    hour < 12
+      ? "Good Morning"
+      : hour < 17
+      ? "Good Afternoon"
+      : "Good Evening";
 
   return (
-
-    <div
+    <motion.div
+      initial={{
+        opacity: 0,
+        y: -20,
+      }}
+      animate={{
+        opacity: 1,
+        y: 0,
+      }}
+      transition={{
+        duration: .5,
+      }}
       className="d-flex justify-content-between align-items-center mb-4"
       style={{
-        background: darkMode ? "#1f2937" : "#ffffff",
-        color: darkMode ? "white" : "black",
+        background: darkMode
+          ? "#1e293b"
+          : "#ffffff",
+        color: darkMode
+          ? "#fff"
+          : "#000",
         padding: "20px 25px",
         borderRadius: "20px",
-        boxShadow: "0 8px 20px rgba(0,0,0,0.08)",
+        boxShadow:
+          "0 8px 20px rgba(0,0,0,.08)",
       }}
     >
 
@@ -51,25 +72,29 @@ function Topbar() {
       <div>
 
         <h2 className="fw-bold mb-1">
-          Dashboard
+
+          👋 {greeting}, {user}
+
         </h2>
 
         <p
-          className="mb-0"
           style={{
-            color: darkMode ? "#d1d5db" : "#6b7280",
+            color: darkMode
+              ? "#cbd5e1"
+              : "#6b7280",
+            margin: 0,
           }}
         >
-          Welcome to ResumeIQ AI Pro 👋
+
+          Let's build an ATS-friendly resume today 🚀
+
         </p>
 
       </div>
 
       {/* Right */}
 
-      <div
-        className="d-flex align-items-center gap-3"
-      >
+      <div className="d-flex align-items-center gap-3">
 
         {/* Search */}
 
@@ -77,7 +102,7 @@ function Topbar() {
           className="d-flex align-items-center"
           style={{
             background: darkMode
-              ? "#374151"
+              ? "#334155"
               : "#f5f7fb",
             padding: "10px 15px",
             borderRadius: "12px",
@@ -87,7 +112,11 @@ function Topbar() {
 
           <FaSearch
             className="me-2"
-            color="#2563eb"
+            color={
+              darkMode
+                ? "#fff"
+                : "#2563eb"
+            }
           />
 
           <input
@@ -97,8 +126,8 @@ function Topbar() {
             style={{
               background: "transparent",
               color: darkMode
-                ? "white"
-                : "black",
+                ? "#fff"
+                : "#000",
             }}
           />
 
@@ -107,14 +136,14 @@ function Topbar() {
         {/* Notification */}
 
         <button
-          className="btn rounded-circle p-3"
+          className="btn rounded-circle"
           style={{
             background: darkMode
-              ? "#374151"
-              : "#f8f9fa",
+              ? "#334155"
+              : "#f5f7fb",
             color: darkMode
-              ? "white"
-              : "black",
+              ? "#fff"
+              : "#000",
           }}
         >
 
@@ -124,46 +153,43 @@ function Topbar() {
 
         {/* User */}
 
-        <div
-          className="d-flex align-items-center"
-        >
+        <div className="d-flex align-items-center">
 
-          {profileImage ? (
-
-            <img
-              src={profileImage}
-              alt="Profile"
-              className="rounded-circle me-2"
-              style={{
-                width: "45px",
-                height: "45px",
-                objectFit: "cover",
-              }}
-            />
-
-          ) : (
-
-            <FaUserCircle
-              size={45}
-              className="text-primary me-2"
-            />
-
-          )}
+          <img
+            src={
+              profileImage ||
+              "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+            }
+            alt="Profile"
+            style={{
+              width: "52px",
+              height: "52px",
+              borderRadius: "50%",
+              objectFit: "cover",
+              border:
+                "3px solid #2563eb",
+              marginRight: "10px",
+            }}
+          />
 
           <div>
 
-            <h6 className="mb-0 fw-bold">
+            <h6 className="fw-bold mb-0">
+
               {user}
+
             </h6>
 
             <small
               style={{
                 color: darkMode
-                  ? "#d1d5db"
+                  ? "#cbd5e1"
                   : "#6b7280",
               }}
             >
-              Student
+
+              ResumeIQ User
+
             </small>
 
           </div>
@@ -172,10 +198,8 @@ function Topbar() {
 
       </div>
 
-    </div>
-
+    </motion.div>
   );
-
 }
 
 export default Topbar;

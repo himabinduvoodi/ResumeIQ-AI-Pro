@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { loginUser } from "../services/authService";
 import "../styles/Login.css";
 
 function Login() {
@@ -8,17 +9,27 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!email || !password) {
       alert("Please enter Email and Password");
       return;
     }
 
-    localStorage.setItem("user", email);
+    try {
+      const data = await loginUser({
+        email,
+        password,
+      });
 
-    alert("Login Successful ✅");
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
-    navigate("/dashboard");
+      alert("Login Successful ✅");
+
+      navigate("/dashboard");
+    } catch (err) {
+      alert(err.response?.data?.message || "Login Failed");
+    }
   };
 
   return (
@@ -33,14 +44,14 @@ function Login() {
           type="email"
           placeholder="Enter Email"
           value={email}
-          onChange={(e)=>setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
         />
 
         <input
           type="password"
           placeholder="Enter Password"
           value={password}
-          onChange={(e)=>setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
         />
 
         <button onClick={handleLogin}>

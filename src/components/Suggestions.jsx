@@ -1,145 +1,74 @@
-function Suggestions({ resumeText }) {
-  const text = resumeText.toLowerCase();
+function Suggestions() {
 
-  const suggestions = [];
-
-  if (!text.includes("summary") && !text.includes("objective")) {
-    suggestions.push({
-      icon: "📝",
-      title: "Professional Summary",
-      message: "Add a professional summary to highlight your career goals."
-    });
-  }
-
-  if (!text.includes("linkedin")) {
-    suggestions.push({
+  const suggestions = [
+    {
+      icon: "📄",
+      title: "Improve Resume Summary",
+      message: "Write a strong professional summary highlighting your skills."
+    },
+    {
       icon: "💼",
-      title: "LinkedIn Profile",
-      message: "Include your LinkedIn profile URL."
-    });
-  }
-
-  if (!text.includes("github")) {
-    suggestions.push({
-      icon: "💻",
-      title: "GitHub Profile",
-      message: "Add your GitHub profile to showcase projects."
-    });
-  }
-
-  if (
-    !text.includes("internship") &&
-    !text.includes("experience")
-  ) {
-    suggestions.push({
-      icon: "🏢",
-      title: "Experience",
-      message: "Mention internships or work experience."
-    });
-  }
-
-  if (
-    !text.includes("certificate") &&
-    !text.includes("certification")
-  ) {
-    suggestions.push({
+      title: "Add More Projects",
+      message: "Include 2-3 real-world projects with technologies used."
+    },
+    {
+      icon: "🛠️",
+      title: "Include Technical Skills",
+      message: "Mention React, Node.js, MySQL, JavaScript and other skills."
+    },
+    {
       icon: "🏆",
-      title: "Certifications",
-      message: "Add certifications to strengthen your resume."
-    });
-  }
-
-  if (
-    !text.includes("achievement") &&
-    !text.includes("achievements")
-  ) {
-    suggestions.push({
-      icon: "🎯",
-      title: "Achievements",
-      message: "Include measurable achievements and coding contest results."
-    });
-  }
-
-  if (!text.includes("project")) {
-    suggestions.push({
-      icon: "📂",
-      title: "Projects",
-      message: "Add at least 2 strong academic or personal projects."
-    });
-  }
-
-  if (!text.includes("skill")) {
-    suggestions.push({
-      icon: "⚙️",
-      title: "Technical Skills",
-      message: "Mention all programming languages and tools clearly."
-    });
-  }
-
-  if (
-    !/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/.test(
-      resumeText
-    )
-  ) {
-    suggestions.push({
-      icon: "📧",
-      title: "Email",
-      message: "Provide a valid email address."
-    });
-  }
-
-  if (
-    !/(\+91[\s-]?)?[6-9]\d{9}/.test(
-      resumeText
-    )
-  ) {
-    suggestions.push({
-      icon: "📱",
-      title: "Phone Number",
-      message: "Provide a valid mobile number."
-    });
-  }
-
-  if (suggestions.length === 0) {
-    suggestions.push({
-      icon: "🎉",
-      title: "Excellent Resume",
-      message: "Your resume looks ATS friendly. Keep it updated regularly."
-    });
-  }
+      title: "Add Certifications",
+      message: "Include certifications from Coursera, Udemy or NPTEL."
+    },
+    {
+      icon: "📈",
+      title: "Increase ATS Score",
+      message: "Use job-related keywords to improve ATS compatibility."
+    }
+  ];
 
   return (
     <div
-      className="card shadow-lg border-0"
-      style={{
-        borderRadius: "20px",
-      }}
+      className="card shadow-lg border-0 h-100"
+      style={{ borderRadius: "20px" }}
     >
       <div className="card-body">
 
-        <h3 className="fw-bold mb-4 text-center">
-          🤖 AI Resume Insights
-        </h3>
+        <h4 className="fw-bold text-primary mb-4">
+          🤖 AI Resume Suggestions
+        </h4>
 
         {suggestions.map((item, index) => (
           <div
             key={index}
-            className="card mb-3 border-0 shadow-sm"
+            className="d-flex align-items-start mb-3 p-3"
             style={{
-              borderRadius: "15px",
               background: "#f8f9fa",
+              borderLeft: "5px solid #0d6efd",
+              borderRadius: "12px",
             }}
           >
-            <div className="card-body">
+            <div
+              style={{
+                fontSize: "28px",
+                marginRight: "15px",
+              }}
+            >
+              {item.icon}
+            </div>
 
-              <h5 className="fw-bold">
-                {item.icon} {item.title}
-              </h5>
+            <div>
+              <h6 className="fw-bold mb-1">
+                {item.title}
+              </h6>
 
-              <p className="text-muted mb-0">
+              <p
+                className="text-muted mb-0"
+                style={{ fontSize: "15px" }}
+              >
                 {item.message}
               </p>
-
             </div>
           </div>
         ))}

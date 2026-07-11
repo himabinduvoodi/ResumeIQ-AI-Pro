@@ -1,19 +1,15 @@
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-} from "firebase/auth";
+import axios from "axios";
 
-import { auth } from "../firebase";
+const API = axios.create({
+  baseURL: "http://localhost:5000/api/auth",
+});
 
-export const registerUser = async (email, password) => {
-  return await createUserWithEmailAndPassword(auth, email, password);
+export const registerUser = async (userData) => {
+  const response = await API.post("/register", userData);
+  return response.data;
 };
 
-export const loginUser = async (email, password) => {
-  return await signInWithEmailAndPassword(auth, email, password);
-};
-
-export const logoutUser = async () => {
-  return await signOut(auth);
+export const loginUser = async (userData) => {
+  const response = await API.post("/login", userData);
+  return response.data;
 };
