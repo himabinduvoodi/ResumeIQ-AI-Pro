@@ -1,15 +1,31 @@
-import axios from "axios";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
 
-const API = axios.create({
-  baseURL: "http://localhost:5000/api/auth",
-});
+import { auth } from "../firebase";
 
-export const registerUser = async (userData) => {
-  const response = await API.post("/register", userData);
-  return response.data;
+export const registerUser = async ({ name, email, password }) => {
+  const userCredential = await createUserWithEmailAndPassword(
+    auth,
+    email,
+    password
+  );
+
+  await updateProfile(userCredential.user, {
+    displayName: name,
+  });
+
+  return userCredential.user;
 };
 
-export const loginUser = async (userData) => {
-  const response = await API.post("/login", userData);
-  return response.data;
+export const loginUser = async ({ email, password }) => {
+  const userCredential = await signInWithEmailAndPassword(
+    auth,
+    email,
+    password
+  );
+
+  return userCredential.user;
 };

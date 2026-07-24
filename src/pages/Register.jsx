@@ -17,20 +17,17 @@ function Register() {
     }
 
     try {
-      const data = await registerUser({
+      await registerUser({
         name,
         email,
         password,
       });
 
-      alert(data.message);
+      alert("Registration Successful ✅");
 
       navigate("/");
-    } catch (err) {
-      alert(
-        err.response?.data?.message ||
-          "Registration Failed"
-      );
+    } catch (error) {
+      alert(error.message);
     }
   };
 

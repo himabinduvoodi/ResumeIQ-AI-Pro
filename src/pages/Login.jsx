@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../services/authService";
 import "../styles/Login.css";
 
@@ -16,26 +16,30 @@ function Login() {
     }
 
     try {
-      const data = await loginUser({
+      const user = await loginUser({
         email,
         password,
       });
 
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          uid: user.uid,
+          name: user.displayName || "User",
+          email: user.email,
+        })
+      );
 
       alert("Login Successful ✅");
-
       navigate("/dashboard");
-    } catch (err) {
-      alert(err.response?.data?.message || "Login Failed");
+    } catch (error) {
+      alert(error.message);
     }
   };
 
   return (
     <div className="login-container">
       <div className="login-card">
-
         <h1>ResumeIQ AI Pro</h1>
 
         <p>AI Powered Resume Analyzer</p>
@@ -64,7 +68,6 @@ function Login() {
             Sign Up
           </Link>
         </p>
-
       </div>
     </div>
   );

@@ -2,27 +2,25 @@ import { Routes, Route, Navigate } from "react-router-dom";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-
 import Dashboard from "./pages/Dashboard";
 import History from "./pages/History";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 
-function ProtectedRoute({ children }) {
+// Cover Letter
+import CoverLetter from "./pages/CoverLetter";
 
+function ProtectedRoute({ children }) {
   const user = localStorage.getItem("user");
 
-  return user
-    ? children
-    : <Navigate to="/" />;
-
+  return user ? children : <Navigate to="/" replace />;
 }
 
 function App() {
-
   return (
-
     <Routes>
+
+      {/* Public Routes */}
 
       <Route
         path="/"
@@ -33,6 +31,8 @@ function App() {
         path="/register"
         element={<Register />}
       />
+
+      {/* Protected Routes */}
 
       <Route
         path="/dashboard"
@@ -70,15 +70,16 @@ function App() {
         }
       />
 
+
+      {/* Invalid Route */}
+
       <Route
         path="*"
-        element={<Navigate to="/" />}
+        element={<Navigate to="/" replace />}
       />
 
     </Routes>
-
   );
-
 }
 
 export default App;

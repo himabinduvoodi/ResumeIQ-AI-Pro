@@ -1,34 +1,50 @@
 import {
   FaBell,
   FaSearch,
+  FaMoon,
+  FaSun,
+  FaCalendarAlt,
 } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useTheme } from "../context/ThemeContext";
+import { useEffect, useState } from "react";
 
 function Topbar() {
+  const { darkMode, toggleTheme } = useTheme();
 
-  const { darkMode } = useTheme();
+  const [time, setTime] = useState("");
 
-  const email = localStorage.getItem("user");
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
 
-  const profile = JSON.parse(
-    localStorage.getItem("profile")
-  );
+      setTime(
+        now.toLocaleString("en-IN", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      );
+    };
 
-  const profileImage =
-    localStorage.getItem("profileImage");
+    updateTime();
+
+    const interval = setInterval(updateTime, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+  const profile = JSON.parse(localStorage.getItem("profile"));
+  const profileImage = localStorage.getItem("profileImage");
 
   const user =
     profile?.name ||
-    (email
-      ? email
-          .split("@")[0]
-          .replace(/\./g, " ")
-          .replace(/_/g, " ")
-          .replace(/\b\w/g, (c) =>
-            c.toUpperCase()
-          )
-      : "User");
+    storedUser?.name ||
+    storedUser?.email ||
+    "User";
 
   const hour = new Date().getHours();
 
@@ -50,51 +66,66 @@ function Topbar() {
         y: 0,
       }}
       transition={{
-        duration: .5,
+        duration: 0.5,
       }}
       className="d-flex justify-content-between align-items-center mb-4"
       style={{
         background: darkMode
-          ? "#1e293b"
-          : "#ffffff",
-        color: darkMode
-          ? "#fff"
-          : "#000",
-        padding: "20px 25px",
-        borderRadius: "20px",
-        boxShadow:
-          "0 8px 20px rgba(0,0,0,.08)",
+          ? "rgba(15,23,42,.9)"
+          : "rgba(255,255,255,.9)",
+        backdropFilter: "blur(15px)",
+        padding: "22px 28px",
+        borderRadius: "22px",
+        boxShadow: "0 10px 30px rgba(0,0,0,.08)",
       }}
     >
-
-      {/* Left */}
+      {/* LEFT */}
 
       <div>
 
-        <h2 className="fw-bold mb-1">
-
+        <h2
+          className="fw-bold mb-1"
+          style={{
+            color: darkMode
+              ? "#fff"
+              : "#111827",
+          }}
+        >
           👋 {greeting}, {user}
-
         </h2>
 
         <p
+          className="mb-2"
           style={{
             color: darkMode
-              ? "#cbd5e1"
-              : "#6b7280",
-            margin: 0,
+              ? "#CBD5E1"
+              : "#6B7280",
           }}
         >
-
-          Let's build an ATS-friendly resume today 🚀
-
+          Welcome back to ResumeIQ AI Pro 🚀
         </p>
+
+        <small
+          style={{
+            color: darkMode
+              ? "#94A3B8"
+              : "#64748B",
+          }}
+        >
+          <FaCalendarAlt className="me-2" />
+          {time}
+        </small>
 
       </div>
 
-      {/* Right */}
+      {/* RIGHT */}
 
-      <div className="d-flex align-items-center gap-3">
+      <div
+        className="d-flex align-items-center"
+        style={{
+          gap: "18px",
+        }}
+      >
 
         {/* Search */}
 
@@ -102,20 +133,19 @@ function Topbar() {
           className="d-flex align-items-center"
           style={{
             background: darkMode
-              ? "#334155"
-              : "#f5f7fb",
-            padding: "10px 15px",
-            borderRadius: "12px",
-            width: "280px",
+              ? "#1E293B"
+              : "#F8FAFC",
+            borderRadius: "14px",
+            padding: "10px 16px",
+            width: "300px",
           }}
         >
 
           <FaSearch
-            className="me-2"
             color={
               darkMode
                 ? "#fff"
-                : "#2563eb"
+                : "#2563EB"
             }
           />
 
@@ -128,32 +158,98 @@ function Topbar() {
               color: darkMode
                 ? "#fff"
                 : "#000",
+              marginLeft: "10px",
             }}
           />
 
         </div>
 
-        {/* Notification */}
+        {/* Theme */}
 
-        <button
+        <motion.button
+          whileHover={{
+            scale: 1.1,
+          }}
+          whileTap={{
+            scale: .9,
+          }}
+          onClick={toggleTheme}
           className="btn rounded-circle"
           style={{
+            width: "48px",
+            height: "48px",
             background: darkMode
-              ? "#334155"
-              : "#f5f7fb",
-            color: darkMode
-              ? "#fff"
-              : "#000",
+              ? "#1E293B"
+              : "#F8FAFC",
           }}
         >
 
-          <FaBell />
+          {darkMode ? (
+            <FaSun
+              color="#FFD43B"
+            />
+          ) : (
+            <FaMoon
+              color="#2563EB"
+            />
+          )}
 
-        </button>
+        </motion.button>
 
-        {/* User */}
+        {/* Notification */}
 
-        <div className="d-flex align-items-center">
+        <motion.div
+          whileHover={{
+            scale: 1.1,
+          }}
+          style={{
+            position: "relative",
+          }}
+        >
+
+          <button
+            className="btn rounded-circle"
+            style={{
+              width: "48px",
+              height: "48px",
+              background: darkMode
+                ? "#1E293B"
+                : "#F8FAFC",
+            }}
+          >
+
+            <FaBell
+              color={
+                darkMode
+                  ? "#fff"
+                  : "#2563EB"
+              }
+            />
+
+          </button>
+
+          <span
+            style={{
+              position: "absolute",
+              top: "-2px",
+              right: "-2px",
+              width: "12px",
+              height: "12px",
+              background: "#ef4444",
+              borderRadius: "50%",
+            }}
+          />
+
+        </motion.div>
+
+        {/* Profile */}
+
+        <motion.div
+          whileHover={{
+            scale: 1.03,
+          }}
+          className="d-flex align-items-center"
+        >
 
           <img
             src={
@@ -162,39 +258,40 @@ function Topbar() {
             }
             alt="Profile"
             style={{
-              width: "52px",
-              height: "52px",
+              width: "55px",
+              height: "55px",
               borderRadius: "50%",
               objectFit: "cover",
-              border:
-                "3px solid #2563eb",
-              marginRight: "10px",
+              border: "3px solid #2563EB",
             }}
           />
 
-          <div>
+          <div className="ms-3">
 
-            <h6 className="fw-bold mb-0">
-
+            <h6
+              className="fw-bold mb-0"
+              style={{
+                color: darkMode
+                  ? "#fff"
+                  : "#111827",
+              }}
+            >
               {user}
-
             </h6>
 
             <small
               style={{
                 color: darkMode
-                  ? "#cbd5e1"
-                  : "#6b7280",
+                  ? "#94A3B8"
+                  : "#64748B",
               }}
             >
-
-              ResumeIQ User
-
+              AI Resume Developer
             </small>
 
           </div>
 
-        </div>
+        </motion.div>
 
       </div>
 
